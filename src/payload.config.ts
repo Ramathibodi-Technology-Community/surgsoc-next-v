@@ -75,11 +75,11 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: (() => {
-        const uri = process.env.DATABASE_URI
+        const uri = process.env.DATABASE_URL
         if (!uri) {
           throw new Error(
-            '❌ DATABASE_URI is not set.\n' +
-            '   Set DATABASE_URI in your .env file.'
+            '❌ DATABASE_URL is not set.\n' +
+            '   Set DATABASE_URL in your .env file.'
           )
         }
         return uri

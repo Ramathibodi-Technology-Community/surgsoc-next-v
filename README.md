@@ -50,7 +50,7 @@ This repository includes `vercel.json` configured to:
 ### Required Vercel Environment Variables
 
 - `PAYLOAD_SECRET`
-- `DATABASE_URI`
+- `DATABASE_URL`
 - `NEXT_PUBLIC_SERVER_URL` (your production URL)
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
