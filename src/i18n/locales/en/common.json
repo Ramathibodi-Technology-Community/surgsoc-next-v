@@ -1,0 +1,34 @@
+{
+  "nav": {
+    "home": "Home",
+    "forms": "Forms",
+    "events": "Events",
+    "attendings": "Attendings",
+    "team": "Our Team",
+    "admin": "Admin",
+    "logout": "Log out",
+    "signin": "Sign in",
+    "signin_google": "Sign in with Google",
+    "signin_email": "Sign in with Email",
+    "or": "or",
+    "email": "Email",
+    "password": "Password",
+    "login_error": "Invalid email or password.",
+    "terms": "Terms & Privacy"
+  },
+  "footer": {
+    "copyright": "© 2026 Ramathibodi Surgical Society",
+    "terms": "Terms & Privacy Policy"
+  },
+  "actions": {
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "back": "Go Back"
+  }
+}

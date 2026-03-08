@@ -1,0 +1,131 @@
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+
+@theme {
+  /* Legacy tokens (RASS original) */
+  --color-base-0: #1c2127;
+  --color-base-1: #1e1e1e;
+  --color-base-2: #333434;
+  --color-base-3: #626363;
+  --color-base-4: #7c7c7d;
+  --color-base-5: #919493;
+  --color-base-6: #a2a7ad;
+  --color-base-7: #bcc2c4;
+  --color-base-8: #d9d9d9;
+  --color-base-9: #fffdf9;
+  --color-primary-1: #237f70;
+  --color-primary-2: #36baa4;
+
+  /* ShadCN / Catppuccin mappings */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius: 0.75rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Fonts */
+  --font-sans: var(--font-sans), var(--font-thai), ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--font-script), cursive;
+
+  /* Animations */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
+  }
+}
+
+/*
+  Theme Definitions
+  Blend of RASS Warmth + Catppuccin Mocha Depth
+*/
+:root {
+  color-scheme: dark;
+  /* RASS Base (Required for legacy components) */
+  --color-base-0: #1c2127;
+  --color-base-1: #1e1e1e;
+  --color-base-2: #333434;
+  --color-base-3: #626363;
+  --color-base-4: #7c7c7d;
+  --color-base-5: #919493;
+  --color-base-6: #a2a7ad;
+  --color-base-7: #bcc2c4;
+  --color-base-8: #d9d9d9;
+  --color-base-9: #fffdf9;
+  --color-primary-1: #237f70;
+  --color-primary-2: #36baa4;
+
+  /* ShadCN Variables */
+  --background: #1c2127;       /* RASS Base-0 */
+  --foreground: #fffdf9;       /* RASS Base-9 */
+
+  --card: #1e1f2a;             /* RASS Base-1 + Catppuccin tint */
+  --card-foreground: #fffdf9;
+
+  --popover: #1e1f2a;
+  --popover-foreground: #fffdf9;
+
+  --primary: #237f70;          /* RASS Primary */
+  --primary-foreground: #fffdf9;
+
+  --secondary: #363848;        /* Catppuccin Surface0-ish */
+  --secondary-foreground: #cdd6f4; /* Catppuccin Text */
+
+  --muted: #2e3044;            /* Catppuccin Surface */
+  --muted-foreground: #9399b2; /* Catppuccin Overlay2 */
+
+  --accent: #36baa4;           /* RASS Primary-2 */
+  --accent-foreground: #fffdf9;
+
+  --destructive: #f38ba8;      /* Catppuccin Red */
+  --destructive-foreground: #fffdf9;
+
+  --border: #2e3044;
+  --input: #363848;
+  --ring: #36baa4;
+
+  --radius: 0.75rem;
+
+  /* Catppuccin Semantic Extras */
+  --success: #a6e3a1;
+  --warning: #fab387;
+  --info: #89b4fa;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  .font-script {
+    font-family: var(--font-script);
+  }
+}

@@ -1,0 +1,90 @@
+import React from 'react'
+import type { Metadata } from 'next'
+import { getPayload } from 'payload'
+import config from '@payload-config'
+import { getDictionary } from '@/i18n/server'
+import { Locale } from '@/i18n/config'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Mail } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Attending Physicians | RASS',
+  description: 'Our advisor physicians at Ramathibodi Surgical Society.',
+}
+
+export default async function AttendingsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params as { locale: Locale }
+  const t = (await getDictionary(locale)).attendings
+  const payload = await getPayload({ config })
+
+  const { docs: attendings } = await payload.find({
+    collection: 'attendings' as any,
+    where: { is_visible: { equals: true } },
+    sort: 'sort_order',
+    limit: 50,
+  })
+
+  return (
+    <div className="max-w-6xl mx-auto py-12 px-4 animate-in fade-in duration-500">
+      <div className="text-center mb-16 space-y-4">
+        <h1 className="text-4xl md:text-5xl font-black">{t.title}</h1>
+        <p className="text-muted-foreground text-xl max-w-2xl mx-auto">{t.subtitle}</p>
+      </div>
+
+      {attendings.length === 0 ? (
+        <div className="text-center py-16 bg-muted/20 rounded-2xl border border-dashed border-muted-foreground/25">
+          <p className="text-xl font-medium mb-2">{t.no_attendings}</p>
+          <p className="text-sm text-muted-foreground">{t.admin_dashboard}</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {attendings.map((att: any) => (
+            <Card key={att.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 border-border/50 bg-card group">
+              {/* Photo */}
+              <div className="aspect-square bg-muted flex items-center justify-center relative overflow-hidden">
+                {att.image_url ? (
+                  <img src={att.image_url} alt={att.display_name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                ) : (
+                  <div className="w-32 h-32 bg-primary/10 rounded-full flex items-center justify-center text-primary text-4xl font-bold">
+                    {att.name_english?.first_name?.charAt(0) || att.name_thai?.first_name?.charAt(0) || '?'}
+                  </div>
+                )}
+              </div>
+
+              <CardContent className="p-6">
+                <p className="text-xs text-primary font-bold uppercase tracking-wider mb-2">
+                  {att.title || t.faculty}
+                </p>
+                <h3 className="text-xl font-bold leading-tight mb-1 text-card-foreground">
+                  {att.name_english?.first_name} {att.name_english?.last_name}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4 font-medium">
+                  {att.name_thai?.first_name} {att.name_thai?.last_name}
+                </p>
+
+                {att.specialty && (
+                  <Badge variant="secondary" className="mb-4 font-normal">
+                    {att.specialty.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}
+                  </Badge>
+                )}
+
+                {att.contact?.email && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mt-2 pt-4 border-t border-border/50">
+                    <Mail className="w-3.5 h-3.5" />
+                    {att.contact.email}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}

@@ -1,0 +1,17 @@
+{
+  "title": "Our Team",
+  "subtitle": "Current team members",
+  "academic_year": "Academic Year {{year}}",
+  "no_members": "No team members to display yet.",
+  "admin_dashboard": "Content will be managed through the admin dashboard.",
+  "hall_of_fame": "View Hall of Fame",
+  "departments": {
+    "IA": "Internal Affairs",
+    "EA": "External Affairs",
+    "OD": "Operations & Development",
+    "AD": "Academic",
+    "CC": "Creative & Content",
+    "PR": "Public Relations",
+    "other": "Other"
+  }
+}
