@@ -25,14 +25,18 @@ export async function loginWithEmail(
     })
 
     if (result.token) {
-      // Set the auth cookie so subsequent requests are authenticated
+      // Set the auth cookie so subsequent requests are authenticated.
+      // Cookie lifetime must match the JWT's tokenExpiration so the browser
+      // doesn't keep sending a cookie wrapping an already-expired token.
       const cookieStore = await cookies()
+      const tokenExpiration =
+        payload.collections['users'].config.auth.tokenExpiration ?? 60 * 60 * 24 * 7
       cookieStore.set('payload-token', result.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         path: '/',
         sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
+        maxAge: tokenExpiration,
       })
 
       return { success: true, message: 'Login successful' }

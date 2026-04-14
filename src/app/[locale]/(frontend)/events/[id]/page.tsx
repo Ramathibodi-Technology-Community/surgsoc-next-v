@@ -45,10 +45,14 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
   const payload = await getPayload({ config })
   const { user } = await payload.auth({ headers: await headers() })
 
+  // overrideAccess: true is needed so `participant_detail` (field-access-gated
+  // to staff in the REST API) is available here. The UI still only renders
+  // it when `event.user_status === 'confirmed'`.
   const eventDoc = await payload.findByID({
     collection: 'events',
     id: id,
     depth: 2,
+    overrideAccess: true,
   })
 
   if (!eventDoc) {
@@ -83,9 +87,12 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
     }
 
     if (cta) {
+      // `t.actions` only has translations for a subset of EventAction kinds;
+      // fall back to the label from deriveEventCta for the rest. The cast is
+      // necessary because EventAction is wider than the dictionary keys.
+      const localizedLabel = (t.actions as Record<string, string | undefined>)[cta.kind]
       return {
-        // @ts-ignore
-        label: t.actions[cta.kind] || cta.label,
+        label: localizedLabel || cta.label,
         href: cta.href,
         disabled: cta.disabled ?? false,
         kind: cta.kind,

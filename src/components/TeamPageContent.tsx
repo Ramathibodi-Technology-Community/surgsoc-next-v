@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import Image from 'next/image'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -214,11 +213,9 @@ function MemberCard({ member, large }: { member: MemberData; large?: boolean }) 
         }`}
       >
         {imageUrl ? (
-          <Image
+          <img
             src={imageUrl}
             alt={name}
-            width={large ? 128 : 96}
-            height={large ? 128 : 96}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (

@@ -8,7 +8,7 @@ const cspDirectives = [
   "frame-ancestors 'none'",
   "object-src 'none'",
   "form-action 'self'",
-  "img-src 'self' data: blob: https://lh3.googleusercontent.com https://drive.google.com",
+  "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
@@ -25,18 +25,6 @@ const contentSecurityPolicy = cspDirectives.join('; ')
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   serverExternalPackages: ['@payloadcms/db-postgres'],
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'lh3.googleusercontent.com',
-      },
-      {
-        protocol: 'https',
-         hostname: 'drive.google.com',
-      }
-    ],
-  },
   async headers() {
     const baseHeaders = [
       {

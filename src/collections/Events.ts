@@ -150,10 +150,12 @@ export const Events: CollectionConfig = {
                 {
                   name: 'registration_opens_at',
                   type: 'date',
+                  admin: { date: { pickerAppearance: 'dayAndTime' } },
                 },
                 {
                   name: 'registration_closes_at',
                   type: 'date',
+                  admin: { date: { pickerAppearance: 'dayAndTime' } },
                 },
               ],
             },
@@ -241,6 +243,17 @@ export const Events: CollectionConfig = {
                 label: 'Hidden Details (Revealed to Confirmed Participants)',
                 admin: {
                   description: 'Add LINE group link, meeting location, instructions here. Only visible to users with "confirmed" status.',
+                },
+                access: {
+                  // REST API: only staff with manage_events see this field.
+                  // Server-rendered pages that need to show it to confirmed participants
+                  // must call payload with `overrideAccess: true` AFTER verifying the
+                  // user's registration status. This keeps the raw /api/events/:id
+                  // endpoint from leaking hidden details to unauthenticated clients.
+                  read: ({ req: { user } }) => {
+                    if (!user) return false
+                    return hasPermission(user as User, 'manage_events')
+                  },
                 },
             },
             {

@@ -3,7 +3,12 @@ import config from '@payload-config'
 import { headers, cookies } from 'next/headers'
 
 export async function GET() {
-  if (process.env.NODE_ENV !== 'development') {
+  // Explicit opt-in guard — NODE_ENV can be 'test' in CI, which a NODE_ENV-only
+  // check would expose. Require an explicit env var and also block production.
+  if (
+    process.env.NODE_ENV === 'production' ||
+    process.env.ALLOW_DEBUG_ENDPOINTS !== 'true'
+  ) {
     return new Response(null, { status: 404 })
   }
 

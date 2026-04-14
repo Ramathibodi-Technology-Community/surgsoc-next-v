@@ -10,6 +10,22 @@ import { isProfileComplete } from '@/libs/profile-completion'
 
 export const dynamic = 'force-dynamic'
 
+// OAuth 2.0 / OIDC standard error codes — anything outside this allowlist
+// is replaced with a generic code so attacker-controlled error strings
+// cannot be reflected into the login URL.
+const ALLOWED_OAUTH_ERRORS = new Set([
+  'access_denied',
+  'invalid_request',
+  'unauthorized_client',
+  'unsupported_response_type',
+  'invalid_scope',
+  'server_error',
+  'temporarily_unavailable',
+  'login_required',
+  'consent_required',
+  'interaction_required',
+])
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
@@ -17,7 +33,8 @@ export async function GET(request: Request) {
   const error = searchParams.get('error')
 
   if (error) {
-    redirect(`/login?error=${error}`)
+    const safeError = ALLOWED_OAUTH_ERRORS.has(error) ? error : 'oauth_error'
+    redirect(`/login?error=${safeError}`)
   }
 
   if (!code || !state) {

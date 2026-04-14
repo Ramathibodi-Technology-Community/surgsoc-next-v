@@ -6,7 +6,10 @@ vi.mock('@/libs/email/email', () => ({
   sendEmail: sendEmailMock,
 }))
 
-describe('NotificationService', () => {
+// Cold-importing @/libs/notifications pulls in the full react-email template
+// graph, which can take >5s under parallel suite load. Give the tests a larger
+// budget to avoid flaky timeouts.
+describe('NotificationService', { timeout: 15000 }, () => {
   beforeEach(() => {
     sendEmailMock.mockReset()
     sendEmailMock.mockResolvedValue({ success: true, data: { id: 'msg_1' } })

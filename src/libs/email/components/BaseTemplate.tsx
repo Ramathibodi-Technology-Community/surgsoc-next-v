@@ -1,12 +1,15 @@
 import * as React from 'react';
-import { Html, Head, Body, Container, Section, Text, Button, Img, Heading, Hr, Link } from '@react-email/components';
+import { Html, Head, Body, Container, Section, Text, Img, Heading, Hr, Link } from '@react-email/components';
 
 interface BaseTemplateProps {
   children: React.ReactNode;
   previewText?: string;
 }
 
-export const BaseTemplate: React.FC<BaseTemplateProps> = ({ children, previewText }) => {
+const SITE_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'https://surgsoc.mahidol.edu';
+const SITE_HOST = SITE_URL.replace(/^https?:\/\//, '').replace(/\/$/, '');
+
+export const BaseTemplate: React.FC<BaseTemplateProps> = ({ children }) => {
   return (
     <Html>
       <Head />
@@ -14,7 +17,7 @@ export const BaseTemplate: React.FC<BaseTemplateProps> = ({ children, previewTex
         <Container style={container}>
           <Section>
             <Img
-              src="https://surgsoc.mahidol.edu/assets/logo_surgsoc.jpg" // TODO: Use real hosted image
+              src={`${SITE_URL}/assets/logo_surgsoc.jpg`}
               width="50"
               height="50"
               alt="SurgSoc Logo"
@@ -32,7 +35,7 @@ export const BaseTemplate: React.FC<BaseTemplateProps> = ({ children, previewTex
           <Section style={footer}>
             <Text style={footerText}>
               Surgery Society, Mahidol University<br />
-              <Link href="https://surgsoc.mahidol.edu" style={link}>surgsoc.mahidol.edu</Link>
+              <Link href={SITE_URL} style={link}>{SITE_HOST}</Link>
             </Text>
           </Section>
         </Container>

@@ -2,6 +2,7 @@
 
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { getErrorMessage } from '@/libs/utils'
 import { canInteractAsMember } from '@/libs/permissions'
 
 import { headers } from 'next/headers'
@@ -16,6 +17,29 @@ export async function submitForm(formId: string | number, data: Record<string, u
   }
 
   try {
+      const formDoc = await payload.findByID({
+        collection: 'forms',
+        id: formId,
+        depth: 0,
+      }) as any
+
+      if (formDoc.publish && formDoc.publish.allow_multiple_submissions === false) {
+        const existingSubmissions = await payload.find({
+          collection: 'form-submissions',
+          where: {
+            and: [
+              { form: { equals: formId } },
+              { user: { equals: user.id } },
+            ],
+          },
+          limit: 1,
+        })
+
+        if (existingSubmissions.totalDocs > 0) {
+          throw new Error('You have already submitted this form.')
+        }
+      }
+
       await payload.create({
         collection: 'form-submissions',
         data: {
@@ -28,7 +52,7 @@ export async function submitForm(formId: string | number, data: Record<string, u
         },
       })
   } catch (error) {
-      console.error('Error submitting form:', error)
+      console.error(`Error submitting form: ${getErrorMessage(error)}`)
       throw new Error('Failed to submit form')
   }
 }

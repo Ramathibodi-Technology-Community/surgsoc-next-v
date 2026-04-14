@@ -2,6 +2,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const payloadMock = {
   login: vi.fn(),
+  collections: {
+    users: {
+      config: {
+        auth: { tokenExpiration: 28800 },
+      },
+    },
+  },
 }
 
 const cookieSetMock = vi.fn()

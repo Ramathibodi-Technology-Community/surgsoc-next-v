@@ -1,4 +1,8 @@
 import { ResourceScheduling } from './resource-scheduling'
+import type { Event as PayloadEvent } from '@/payload-types'
+
+// Lexical serialized editor state — the runtime shape of Payload's richText fields.
+export type SerializedLexicalState = NonNullable<PayloadEvent['participant_detail']>
 
 export type EventAction =
   | 'register'
@@ -74,7 +78,7 @@ export interface Event {
   participantLimit?: number
   registrationOpensAt?: string
   registrationClosesAt?: string
-  participantDetail?: any
+  participantDetail?: SerializedLexicalState | null
   loa_form?: string | { id: string }
 }
 
@@ -98,9 +102,14 @@ export function deriveEventCta(
     status_override: event.status_override,
   })
 
+  // Tri-branch: explicit overrides win; otherwise AND the legacy `registrationOpen`
+  // flag (from the `is_registration_closed` checkbox) with the time-based schedule.
   const registrationOpen =
-    (event.registrationOpen ?? true) &&
-    (event.registrationStatus?.isOpen ?? scheduleStatus.isOpen)
+    event.status_override === 'open'
+      ? true
+      : event.status_override === 'closed'
+        ? false
+        : (event.registrationOpen ?? true) && scheduleStatus.isOpen
   const reflectionOpen = event.reflectionOpen ?? false
   const reflectionPending =
     userStatus === 'participant' &&
@@ -164,6 +173,12 @@ export function deriveEventCta(
     }
   }
 
+  // Applicants who already applied must never see "Register" again, even if
+  // registration is still open. Keep this check ABOVE the registrationOpen branch.
+  if (userStatus === 'applicant') {
+    return { kind: 'waiting_list', label: 'Pending Selection', disabled: true }
+  }
+
   if (registrationOpen && !isPast) {
     return {
       kind: 'register',
@@ -171,10 +186,6 @@ export function deriveEventCta(
       href: `/events/${event.id}/apply`,
       disabled: false,
     }
-  }
-
-  if (userStatus === 'applicant') {
-    return { kind: 'waiting_list', label: 'Pending Selection', disabled: true }
   }
 
   return null

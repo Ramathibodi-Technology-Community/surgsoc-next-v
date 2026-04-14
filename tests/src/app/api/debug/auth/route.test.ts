@@ -22,20 +22,33 @@ describe('GET /api/debug/auth', () => {
     payloadMock.auth.mockReset()
     cookieStore.getAll.mockReset()
     cookieStore.get.mockReset()
+    delete (process.env as Record<string, string | undefined>).ALLOW_DEBUG_ENDPOINTS
   })
 
-  it('returns 404 outside development', async () => {
+  it('returns 404 in production even if ALLOW_DEBUG_ENDPOINTS is set', async () => {
     const mutableEnv = process.env as Record<string, string | undefined>
     mutableEnv.NODE_ENV = 'production'
+    mutableEnv.ALLOW_DEBUG_ENDPOINTS = 'true'
     const { GET } = await import('@/app/api/debug/auth/route')
 
     const res = await GET()
     expect(res.status).toBe(404)
   })
 
-  it('returns auth and cookie debug info in development', async () => {
+  it('returns 404 in development when ALLOW_DEBUG_ENDPOINTS is not set', async () => {
     const mutableEnv = process.env as Record<string, string | undefined>
     mutableEnv.NODE_ENV = 'development'
+    delete mutableEnv.ALLOW_DEBUG_ENDPOINTS
+    const { GET } = await import('@/app/api/debug/auth/route')
+
+    const res = await GET()
+    expect(res.status).toBe(404)
+  })
+
+  it('returns auth and cookie debug info when explicitly enabled', async () => {
+    const mutableEnv = process.env as Record<string, string | undefined>
+    mutableEnv.NODE_ENV = 'development'
+    mutableEnv.ALLOW_DEBUG_ENDPOINTS = 'true'
 
     payloadMock.auth.mockResolvedValue({ user: { id: 9, email: 'dev@mahidol.edu' } })
     cookieStore.getAll.mockReturnValue([{ name: 'payload-token', value: 'abc' }, { name: 'other', value: '1' }])

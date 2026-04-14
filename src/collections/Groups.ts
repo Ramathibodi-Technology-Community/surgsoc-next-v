@@ -9,6 +9,11 @@ export const Groups: CollectionConfig = {
     group: 'Admin',
   },
   access: {
+    // Groups must remain readable to every authenticated user because
+    // `hasPermission` resolves user → groups → permissions on every auth'd
+    // request. Gating this (or the `permissions` field) would break the
+    // capability model for non-staff users who rely on group-based perms.
+    // Tracked as informational: the bitmask model is visible to any logged-in user.
     read: ({ req: { user } }) => !!user,
     create: ({ req: { user } }) => hasPermission(user as User, 'manage_users'),
     update: ({ req: { user } }) => hasPermission(user as User, 'manage_users'),

@@ -25,9 +25,13 @@ export default async function ApplicantsPage({ params }: { params: Promise<{ id:
     id,
   })
 
-  // Check if user is event owner or admin
+  // Check if user is event owner or admin.
+  // Unwrap the owner relationship — Payload may return it as an ID or a populated object.
+  const ownerId = typeof event.owner === 'object' && event.owner !== null
+    ? (event.owner as { id: string | number }).id
+    : event.owner
   const isAuthorized =
-    event.owner === user.id ||
+    String(ownerId) === String(user.id) ||
     ['admin', 'superadmin', 'vp'].some(r => (user as any).roles?.includes(r))
 
   if (!isAuthorized) {

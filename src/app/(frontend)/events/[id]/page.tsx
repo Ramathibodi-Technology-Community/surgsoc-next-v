@@ -45,10 +45,14 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
   const payload = await getPayload({ config })
   const { user } = await payload.auth({ headers: await headers() })
 
+  // overrideAccess: true is needed so `participant_detail` (field-access-gated
+  // to staff in the REST API) is available here. The UI still only renders
+  // it when `event.user_status === 'confirmed'`.
   const eventDoc = await payload.findByID({
     collection: 'events',
     id: id,
     depth: 2,
+    overrideAccess: true,
   })
 
   if (!eventDoc) {

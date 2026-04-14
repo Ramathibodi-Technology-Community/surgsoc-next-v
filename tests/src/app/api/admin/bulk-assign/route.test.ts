@@ -57,9 +57,13 @@ describe('POST /api/admin/bulk-assign', () => {
 
   it('assigns group only to users missing it', async () => {
     payloadMock.auth.mockResolvedValue({ user: { id: 1, roles: ['admin'] } })
-    payloadMock.findByID
-      .mockResolvedValueOnce({ id: 'u1', groups: ['g1'] })
-      .mockResolvedValueOnce({ id: 'u2', groups: ['g0'] })
+    // Single batched find call returns both users at once (no more N+1)
+    payloadMock.find.mockResolvedValue({
+      docs: [
+        { id: 'u1', groups: ['g1'] },
+        { id: 'u2', groups: ['g0'] },
+      ],
+    })
     payloadMock.update.mockResolvedValue({})
 
     const { POST } = await import('@/app/api/admin/bulk-assign/route')
@@ -78,6 +82,13 @@ describe('POST /api/admin/bulk-assign', () => {
     const body = await res.json()
 
     expect(res.status).toBe(200)
+    expect(payloadMock.find).toHaveBeenCalledTimes(1)
+    expect(payloadMock.find).toHaveBeenCalledWith(
+      expect.objectContaining({
+        collection: 'users',
+        where: { id: { in: ['u1', 'u2'] } },
+      }),
+    )
     expect(payloadMock.update).toHaveBeenCalledTimes(1)
     expect(payloadMock.update).toHaveBeenCalledWith({
       collection: 'users',
@@ -85,10 +96,11 @@ describe('POST /api/admin/bulk-assign', () => {
       data: { groups: ['g0', 'g1'] },
       context: { skipGroupSync: true },
     })
-    expect(body).toEqual({
+    expect(body).toMatchObject({
       success: true,
-      message: 'Successfully assigned group to 2 users.',
-      count: 2,
+      count: 1,
+      skipped: 1,
+      failedIds: [],
     })
   })
 })
